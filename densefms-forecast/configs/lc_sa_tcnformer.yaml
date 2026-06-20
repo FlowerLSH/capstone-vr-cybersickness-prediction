@@ -1,0 +1,59 @@
+artifacts_dir: artifacts
+runs_dir: runs
+
+data:
+  default_sampling_interval: 0.5
+  sampling_interval: 0.5
+  calibration_seconds: 90.0
+  horizon_seconds: 5.0
+  recent_seconds: 30.0
+  recent_window_seconds: 30.0
+  use_static: false
+  static_features: ["age", "gender", "mssq"]
+  allow_missing_static: false
+  train_frac: 0.70
+  val_frac: 0.15
+  test_frac: 0.15
+  group_kfold: false
+  group_kfold_splits: 5
+
+model:
+  head_dim: 6
+  use_static: false
+  static_dim: 5
+  static_hidden_dim: 64
+  static_dropout: 0.1
+  d_model: 64
+  kernel_size: 3
+  dropout: 0.1
+  calib_dilations: [1, 2, 4, 8, 16]
+  recent_dilations: auto
+  transformer_layers: 1
+  transformer_heads: 4
+  transformer_ff_dim: 128
+  pooling: mean
+  fms_context_mode: start_only
+  anchor_mode: none
+  anchor_interval_seconds: 0.0
+  predict_delta_from_anchor: false
+  multi_horizon: false
+  horizon_set: null
+
+loss:
+  type: smooth_l1
+  mode: level_only
+  trend_weight: 0.0
+
+evaluation:
+  high_fms_threshold: 10.0
+
+training:
+  seed: 42
+  optimizer: AdamW
+  learning_rate: 0.001
+  weight_decay: 0.0001
+  batch_size: 64
+  gradient_clip: 1.0
+  epochs: 40
+  patience: 6
+  num_workers: 0

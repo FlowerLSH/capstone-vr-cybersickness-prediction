@@ -1,0 +1,52 @@
+artifacts_dir: artifacts
+runs_dir: runs
+
+data:
+  default_sampling_interval: 0.5
+  sampling_interval: 0.5
+  calibration_seconds: 30
+  horizon_seconds: 5
+  recent_seconds: 10
+  recent_window_seconds: 10
+  use_static: false
+  static_features: ["age", "gender"]
+  allow_missing_static: false
+  train_frac: 0.70
+  val_frac: 0.15
+  test_frac: 0.15
+  group_kfold: false
+  group_kfold_splits: 5
+
+model:
+  head_dim: 6
+  no_film: false
+  no_recent_encoder: false
+  recent_encoder: tcn
+  recent_attn_heads: 4
+  recent_attn_layers: 1
+  recent_attn_dropout: 0.1
+  no_aux_now: false
+  use_legacy_multihead: false
+  use_static: false
+  static_dim: 4
+  static_hidden_dim: 64
+  static_dropout: 0.1
+  max_time_steps: 2048
+
+loss:
+  mode: level_only
+  trend_weight: 0.0
+
+evaluation:
+  high_fms_threshold: 7.0
+
+training:
+  seed: 42
+  optimizer: AdamW
+  learning_rate: 0.001
+  weight_decay: 0.0001
+  batch_size: 16
+  gradient_clip: 1.0
+  epochs: 80
+  patience: 12
+  num_workers: 0

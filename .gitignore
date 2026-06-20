@@ -1,0 +1,74 @@
+# Python caches and environments
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.venv/
+venv/
+.env
+
+# DenseFMS data, checkpoints, and generated experiment artifacts
+densefms-forecast/DenseFMS/*
+!densefms-forecast/DenseFMS/README.md
+densefms-forecast/runs/
+densefms-forecast/results/
+densefms-forecast/results_no_ckpt/
+densefms-forecast/artifacts/
+densefms-forecast/reports/
+densefms-forecast/save/
+*.pt
+*.pth
+*.ckpt
+*.pkl
+*.npy
+*.npz
+*.csv
+
+# Unity generated folders
+unity-demo/UnityProject/[Ll]ibrary/
+unity-demo/UnityProject/[Tt]emp/
+unity-demo/UnityProject/[Oo]bj/
+unity-demo/UnityProject/[Bb]uild/
+unity-demo/UnityProject/[Bb]uilds/
+unity-demo/UnityProject/[Ll]ogs/
+unity-demo/UnityProject/[Uu]ser[Ss]ettings/
+unity-demo/UnityProject/[Mm]emoryCaptures/
+unity-demo/UnityProject/[Rr]ecordings/
+unity-demo/UnityProject/.vs/
+unity-demo/UnityProject/.gradle/
+unity-demo/UnityProject/ExportedObj/
+unity-demo/UnityProject/.consulo/
+*.csproj
+*.unityproj
+*.sln
+*.suo
+*.tmp
+*.user
+*.userprefs
+*.pidb
+*.booproj
+*.svd
+*.pdb
+*.mdb
+*.opendb
+*.VC.db
+*.pidb.meta
+*.pdb.meta
+*.mdb.meta
+
+# Build outputs and packages
+*.apk
+*.aab
+*.unitypackage
+*.app
+*.exe
+
+# Local logs and replay scratch space
+*.log
+densefms_tmp/
+unity-demo/densefms_tmp/
+
+# OS/editor noise
+.DS_Store
+Thumbs.db

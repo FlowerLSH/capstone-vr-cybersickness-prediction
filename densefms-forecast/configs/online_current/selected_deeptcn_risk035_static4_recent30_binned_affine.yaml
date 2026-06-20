@@ -1,0 +1,127 @@
+artifacts_dir: artifacts
+runs_dir: runs/online_fms_current_tracking_0510_goal_search
+
+task:
+  mode: online_current_risk
+  rise_horizon_seconds: [5.0, 10.0]
+  rise_thresholds: [2.0, 3.0]
+
+data:
+  default_sampling_interval: 0.5
+  sampling_interval: 0.5
+  max_session_points: 420
+  calibration_seconds: 120.0
+  horizon_seconds: 10.0
+  recent_seconds: 30.0
+  recent_window_seconds: 30.0
+  use_static: true
+  static_features: ["age", "mssq", "gender"]
+  gender_encoding: binary2
+  allow_missing_static: false
+  train_frac: 0.70
+  val_frac: 0.15
+  test_frac: 0.15
+  group_kfold: false
+  group_kfold_splits: 5
+
+model:
+  head_dim: 6
+  use_static: true
+  static_dim: 4
+  d_model: 96
+  hidden_dim: 192
+  kernel_size: 3
+  dropout: 0.10
+  calib_dilations: [1, 2, 4, 8, 16, 32]
+  calibration_encoder_mode: deep_tcn
+  transformer_layers: 0
+  transformer_heads: 4
+  transformer_ff_dim: 288
+  pooling: mean
+  fms_context_mode: calibration_history
+  motion_feature_mode: causal_dynamics_v1
+  motion_stats_branch: false
+  stream_time_features: true
+  stream_context_mode: deep_tcn_latent_gru
+  stream_prepend_calibration: true
+  deep_tcn_dilations: [1, 2, 4, 8, 16]
+  calib_summary_features: true
+  state_feedback_mode: none
+  ordinal_bins: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]
+  ordinal_head_mode: cumulative
+  fms_combine_weight_ordinal: 0.15
+  current_head_mode: range_scaled_delta
+  current_delta_scale: 0.25
+  current_affine_head_enabled: false
+  current_binned_affine_head_enabled: true
+  current_binned_affine_anchor_bins: [5.0, 10.0]
+  current_binned_affine_pred_bins: [5.0, 10.0]
+  current_binned_affine_time_bins: [160.0]
+  current_binned_affine_scale_range: 1.5
+  current_binned_affine_bias_range: 0.5
+  decoder_context_mode: state
+  decoder_hidden_dim: 128
+  motion_encoder_context: linear
+  motion_encoder_layers: 0
+  risk_head_enabled: true
+  risk_temporal_context: none
+  risk_temporal_layers: 0
+  fds_enabled: true
+  fds_min: 0.0
+  fds_max: 20.0
+  fds_bin_size: 1.0
+  fds_num_bins: 21
+  fds_kernel: gaussian
+  fds_kernel_size: 5
+  fds_sigma: 2.0
+  fds_momentum: 0.9
+  fds_blend: 0.75
+  fds_start_update: 1
+  fds_start_smooth: 2
+
+loss:
+  type: mae
+  mode: level_only
+  current_reg_aux_weight: 0.3
+  ordinal_loss_weight: 0.1
+  ordinal_loss_mode: cumulative_bce
+  risk_loss_weight: 0.35
+  smoothness_weight: 0.0
+  risk_pos_weight: auto
+  lds_weighting: true
+  lds_min: 0.0
+  lds_max: 20.0
+  lds_bin_size: 1.0
+  lds_kernel: gaussian
+  lds_kernel_size: 5
+  lds_sigma: 2.0
+  lds_gamma: 0.5
+  lds_weight_min: 0.5
+  lds_weight_max: 3.0
+  trajectory_loss_weight: 0.005
+  trajectory_delta_seconds: [5.0, 10.0]
+  trajectory_delta_weight: 1.0
+  trajectory_centered_weight: 0.0
+  trajectory_range_weight: 0.0
+  trajectory_loss_type: mae
+
+evaluation:
+  high_fms_threshold: 12.0
+  high_fms_caution_threshold: 8.0
+  high_fms_warning_threshold: 12.0
+  rapid_rise_probability_threshold: 0.5
+  final_warning_mode: rapid_rise_only
+  no_test_eval: true
+
+training:
+  seed: 42
+  optimizer: AdamW
+  learning_rate: 0.00045
+  weight_decay: 0.0002
+  batch_size: 48
+  gradient_clip: 1.0
+  epochs: 80
+  patience: 10
+  num_workers: 0
+  selection_metric: mae
+  selection_mode: min

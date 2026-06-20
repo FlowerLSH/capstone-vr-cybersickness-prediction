@@ -1,0 +1,97 @@
+artifacts_dir: artifacts
+runs_dir: runs/online_fms_current_tracking_0508
+
+task:
+  mode: online_current_risk
+  rise_horizon_seconds: [5.0, 10.0]
+  rise_thresholds: [2.0, 3.0]
+  future_aux_horizon_seconds: [5.0, 10.0, 15.0]
+
+data:
+  default_sampling_interval: 0.5
+  sampling_interval: 0.5
+  max_session_points: 420
+  calibration_seconds: 120.0
+  horizon_seconds: 10.0
+  recent_seconds: 10.0
+  recent_window_seconds: 10.0
+  use_static: true
+  static_features: ["age", "mssq", "gender"]
+  gender_encoding: binary2
+  allow_missing_static: false
+  train_frac: 0.70
+  val_frac: 0.15
+  test_frac: 0.15
+  group_kfold: false
+  group_kfold_splits: 5
+
+model:
+  head_dim: 6
+  use_static: true
+  static_dim: 4
+  d_model: 96
+  hidden_dim: 192
+  kernel_size: 3
+  dropout: 0.10
+  calib_dilations: [1, 2, 4, 8, 16, 32]
+  transformer_layers: 2
+  transformer_heads: 4
+  transformer_ff_dim: 288
+  pooling: mean
+  fms_context_mode: calibration_history
+  motion_feature_mode: norm_delta_energy
+  motion_stats_branch: false
+  stream_time_features: true
+  stream_context_mode: deep_tcn_latent_gru
+  stream_prepend_calibration: true
+  deep_tcn_dilations: [1, 2, 4, 8, 16]
+  calib_summary_features: true
+  state_feedback_mode: none
+  ordinal_bins: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]
+  ordinal_head_mode: cumulative
+  fms_combine_weight_ordinal: 0.20
+  current_head_mode: basic
+  current_delta_scale: 1.0
+  decoder_context_mode: state
+  decoder_hidden_dim: 128
+  motion_encoder_context: linear
+  motion_encoder_layers: 0
+  risk_temporal_context: none
+  risk_temporal_layers: 0
+  fds_enabled: false
+
+loss:
+  type: mae
+  mode: level_only
+  current_reg_aux_weight: 0.3
+  ordinal_loss_weight: 0.1
+  ordinal_loss_mode: cumulative_bce
+  risk_loss_weight: 0.25
+  smoothness_weight: 0.0
+  future_aux_loss_weight: 0.05
+  delta_aux_loss_weight: 0.10
+  event_aux_loss_weight: 0.03
+  event_delta_threshold: 1.0
+  risk_pos_weight: auto
+  lds_weighting: false
+
+evaluation:
+  high_fms_threshold: 12.0
+  high_fms_caution_threshold: 8.0
+  high_fms_warning_threshold: 12.0
+  rapid_rise_probability_threshold: 0.5
+  final_warning_mode: rapid_rise_only
+  no_test_eval: true
+
+training:
+  seed: 42
+  optimizer: AdamW
+  learning_rate: 0.00045
+  weight_decay: 0.0002
+  batch_size: 48
+  gradient_clip: 1.0
+  epochs: 80
+  patience: 10
+  num_workers: 0
+  selection_metric: mae
+  selection_mode: min
